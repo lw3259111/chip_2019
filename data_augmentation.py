@@ -31,7 +31,7 @@ from tqdm import tqdm
 #     df.iloc[dev].to_csv(parent_directory + str(i) + '/dev.csv', index=False)
 
 """ Data extension by questions similarity. """
-df_train = pd.read_csv('./data/origin_train.csv', encoding='utf-8', engine='python')
+df_train = pd.read_csv('./data/train.csv', encoding='utf-8', engine='python')
 q1 = df_train['question1'].values
 q2 = df_train['question2'].values
 label = df_train['label'].values

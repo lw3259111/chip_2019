@@ -3,7 +3,7 @@
 import jieba
 import numpy as np
 import pandas as pd
-
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from tqdm import tqdm
 
@@ -237,6 +237,9 @@ def generate_split_chars():
 
     for i in range(10):
         for mode in ['train', 'dev', 'test']:
+            path = './data/noextension/' + str(i) + '/'
+            if not os.exists(path):
+                os.makedirs(path)
             df_temp = pd.read_csv('./data/noextension/' + str(i) + '/' + mode + '.csv', encoding='utf-8', engine='python')
             question1 = df_temp.question1.apply(lambda x: ' '.join(list(x.replace(' ', ''))))
             question2 = df_temp.question2.apply(lambda x: ' '.join(list(x.replace(' ', ''))))

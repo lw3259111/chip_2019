@@ -16,9 +16,9 @@ from torch.nn import CrossEntropyLoss, MSELoss
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler, TensorDataset)
 from tensorboardX import SummaryWriter
 from tqdm import tqdm, trange
-from pytorch_transformers import (WEIGHTS_NAME, BertConfig, BertModel, BertTokenizer)
-from pytorch_transformers import AdamW, WarmupLinearSchedule
-from pytorch_transformers.modeling_bert import BertPreTrainedModel
+from transformers import (WEIGHTS_NAME, BertConfig, BertModel, BertTokenizer)
+from transformers import AdamW, Warmup
+from transformers.modeling_bert import BertPreTrainedModel
 from data_utils import (compute_metrics, convert_examples_to_features, QPMProcessor)
 
 logger = logging.getLogger(__name__)
@@ -133,7 +133,7 @@ def train(args, train_dataset, model, tokenizer):
                       'labels':         batch[3],
                       'hand_features':  batch[4]}
             outputs = model(**inputs)
-            loss = outputs[0]  # model outputs are always tuple in pytorch_transformers (see doc)
+            loss = outputs[0]  # model outputs are always tuple in transformers (see doc)
 
             if args.n_gpu > 1:
                 loss = loss.mean()
@@ -486,7 +486,7 @@ def main():
         checkpoints = [args.output_dir]
         if args.eval_all_checkpoints:
             checkpoints = list(os.path.dirname(c) for c in sorted(glob.glob(args.output_dir + '/**/' + WEIGHTS_NAME, recursive=True)))
-            logging.getLogger("pytorch_transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
+            logging.getLogger("transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
         logger.info("Evaluate the following checkpoints: %s", checkpoints)
         best_f1 = 0.0
         for checkpoint in checkpoints:
@@ -521,7 +521,7 @@ def main():
             checkpoints = [args.output_dir]
             if args.eval_all_checkpoints:
                 checkpoints = list(os.path.dirname(c) for c in sorted(glob.glob(args.output_dir + '/**/' + WEIGHTS_NAME, recursive=True)))
-                logging.getLogger("pytorch_transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
+                logging.getLogger("transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
             logger.info("Evaluate the following checkpoints: %s", checkpoints)
             best_f1 = 0.0
             for checkpoint in checkpoints:
@@ -549,7 +549,7 @@ def main():
         # args.output_dir = parent_output_dir + str(i)
         args.output_dir = parent_output_dir
         tokenizer = tokenizer_class.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
-        logging.getLogger("pytorch_transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
+        logging.getLogger("transformers.modeling_utils").setLevel(logging.WARN)  # Reduce logging
         # checkpoint = args.output_dir + '/best_checkpoint_fold' + str(i)
         checkpoint = args.output_dir + '/best_checkpoint_fold'
         model = model_class.from_pretrained(checkpoint)

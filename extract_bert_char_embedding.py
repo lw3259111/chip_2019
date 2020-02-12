@@ -3,7 +3,7 @@
 import re
 
 import numpy as np
-from pytorch_transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel
 
 
 if __name__ == '__main__':

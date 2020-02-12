@@ -226,21 +226,21 @@ def get_edit_distance(data):
 
 def generate_split_chars():
     for mode in ['train', 'test']:
-        df_temp = pd.read_csv('./data/noextension/' + mode + '.csv', encoding='utf-8', engine='python')
+        df_temp = pd.read_csv('./data/extension/' + mode + '.csv', encoding='utf-8', engine='python')
         question1 = df_temp.question1.apply(lambda x: ' '.join(list(x.replace(' ', ''))))
         question2 = df_temp.question2.apply(lambda x: ' '.join(list(x.replace(' ', ''))))
         df_corpus = pd.DataFrame({
             'question1': question1,
             'question2': question2,
         })
-        df_corpus.to_csv('./data/noextension/' + mode + '_corpus_char.csv', index=False)
+        df_corpus.to_csv('./data/extension/' + mode + '_corpus_char.csv', index=False)
 
     for i in range(10):
         for mode in ['train', 'dev', 'test']:
-            path = './data/noextension/' + str(i) + '/'
+            path = './data/extension/' + str(i) + '/'
             if not os.path.exists(path):
                 os.makedirs(path)
-            df_temp = pd.read_csv('./data/noextension/' + str(i) + '/' + mode + '.csv', encoding='utf-8', engine='python')
+            df_temp = pd.read_csv('./data/extension/' + str(i) + '/' + mode + '.csv', encoding='utf-8', engine='python')
             question1 = df_temp.question1.apply(lambda x: ' '.join(list(x.replace(' ', ''))))
             question2 = df_temp.question2.apply(lambda x: ' '.join(list(x.replace(' ', ''))))
 
@@ -255,23 +255,23 @@ def generate_split_chars():
                     'question1': question1,
                     'question2': question2,
                 })
-            df_corpus.to_csv('./data/noextension/' + str(i) + '/' + mode + '_corpus_char.csv', index=False)
+            df_corpus.to_csv('./data/extension/' + str(i) + '/' + mode + '_corpus_char.csv', index=False)
 
 
 def generate_split_words():
     for mode in ['train', 'test']:
-        df_temp = pd.read_csv('./data/noextension/' + mode + '.csv', encoding='utf-8', engine='python')
+        df_temp = pd.read_csv('./data/extension/' + mode + '.csv', encoding='utf-8', engine='python')
         question1 = df_temp.question1.apply(lambda x: ' '.join(jieba.cut(x.replace(' ', ''))))
         question2 = df_temp.question2.apply(lambda x: ' '.join(jieba.cut(x.replace(' ', ''))))
         df_corpus = pd.DataFrame({
             'question1': question1,
             'question2': question2,
         })
-        df_corpus.to_csv('./data/noextension/' + mode + '_corpus_word.csv', index=False)
+        df_corpus.to_csv('./data/extension/' + mode + '_corpus_word.csv', index=False)
 
     for i in range(10):
         for mode in ['train', 'dev', 'test']:
-            df_temp = pd.read_csv('./data/noextension/' + str(i) + '/' + mode + '.csv', encoding='utf-8', engine='python')
+            df_temp = pd.read_csv('./data/extension/' + str(i) + '/' + mode + '.csv', encoding='utf-8', engine='python')
             question1 = df_temp.question1.apply(lambda x: ' '.join(jieba.cut(x.replace(' ', ''))))
             question2 = df_temp.question2.apply(lambda x: ' '.join(jieba.cut(x.replace(' ', ''))))
 
@@ -286,7 +286,7 @@ def generate_split_words():
                     'question1': question1,
                     'question2': question2,
                 })
-            df_corpus.to_csv('./data/noextension/' + str(i) + '/' + mode + '_corpus_word.csv', index=False)
+            df_corpus.to_csv('./data/extension/' + str(i) + '/' + mode + '_corpus_word.csv', index=False)
 
 
 def generate_features_csv():
@@ -303,15 +303,15 @@ def generate_features_csv():
     print('*' * 10 + ' Generating words corpus file ' + '*' * 10)
     generate_split_words()
 
-    all_train_data = pd.read_csv('./data/noextension/train_corpus_char.csv', encoding='utf-8', engine='python')
+    all_train_data = pd.read_csv('./data/extension/train_corpus_char.csv', encoding='utf-8', engine='python')
     corpus = list(all_train_data.question1) + list(all_train_data.question2)
-    all_test_data = pd.read_csv('./data/noextension/test_corpus_char.csv', encoding='utf-8', engine='python')
+    all_test_data = pd.read_csv('./data/extension/test_corpus_char.csv', encoding='utf-8', engine='python')
     corpus += list(all_test_data.question1) + list(all_test_data.question2)
     vectorizer_char = TfidfVectorizer(token_pattern=r'[^\s]+').fit(corpus)
 
-    all_train_data = pd.read_csv('./data/noextension/train_corpus_word.csv', encoding='utf-8', engine='python')
+    all_train_data = pd.read_csv('./data/extension/train_corpus_word.csv', encoding='utf-8', engine='python')
     corpus = list(all_train_data.question1) + list(all_train_data.question2)
-    all_test_data = pd.read_csv('./data/noextension/test_corpus_word.csv', encoding='utf-8', engine='python')
+    all_test_data = pd.read_csv('./data/extension/test_corpus_word.csv', encoding='utf-8', engine='python')
     corpus += list(all_test_data.question1) + list(all_test_data.question2)
     vectorizer_word = TfidfVectorizer(token_pattern=r'[^\s]+').fit(corpus)
 
@@ -320,7 +320,7 @@ def generate_features_csv():
         sorted_chars_power = None
         sorted_words_power = None
         for mode in ['train', 'dev', 'test']:
-            data = pd.read_csv('./data/noextension/' + str(i) + '/' + mode + '_corpus_char.csv', encoding='utf-8', engine='python')
+            data = pd.read_csv('./data/extension/' + str(i) + '/' + mode + '_corpus_char.csv', encoding='utf-8', engine='python')
             if mode == 'train':
                 sorted_chars_power = generate_powerful_unit(data)
 
@@ -333,7 +333,7 @@ def generate_features_csv():
             pchar_oside, pchar_oside_tags = powerful_units_oside_tag(sorted_chars_power, data, 1, 0.7)
             pchar_oside_rate = powerful_units_oside_rate(sorted_chars_power, pchar_oside, data)
 
-            data = pd.read_csv('./data/noextension/' + str(i) + '/' + mode + '_corpus_word.csv', encoding='utf-8', engine='python')
+            data = pd.read_csv('./data/extension/' + str(i) + '/' + mode + '_corpus_word.csv', encoding='utf-8', engine='python')
             if mode == 'train':
                 sorted_words_power = generate_powerful_unit(data)
 
@@ -349,7 +349,7 @@ def generate_features_csv():
             df = pd.DataFrame({'len_diff_char': len_diff_char, 'edit_char': edit_char, 'len_diff_word': len_diff_word, 'edit_word': edit_word,
                                'adjusted_common_char_ratio': adjusted_common_char_ratio, 'adjusted_common_word_ratio': adjusted_common_word_ratio,
                                'pchar_dside_rate': pchar_dside_rate, 'pchar_oside_rate': pchar_oside_rate, 'pword_dside_rate': pword_dside_rate, 'pword_oside_rate': pword_oside_rate})
-            df.to_csv('./data/noextension/' + str(i) + '/' + mode + '_feats.csv', index=False)
+            df.to_csv('./data/extension/' + str(i) + '/' + mode + '_feats.csv', index=False)
 
 
 generate_features_csv()

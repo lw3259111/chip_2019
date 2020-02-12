@@ -20,7 +20,7 @@ from tqdm import tqdm
 # dev_df.to_csv('./data/dev.csv', index=False)
 
 """ KFold """
-# parent_directory = './data/extension/'
+# parent_directory = './data/WarmUp/'
 # df = pd.read_csv(parent_directory + 'final_train.csv', encoding='utf-8', engine='python')
 # kFold = KFold(n_splits=10, shuffle=True, random_state=12345)
 # folds = kFold.split(df)
@@ -30,7 +30,7 @@ from tqdm import tqdm
 #     df.iloc[train].to_csv(parent_directory + str(i) + '/origin_train.csv', index=False)
 #     df.iloc[dev].to_csv(parent_directory + str(i) + '/dev.csv', index=False)
 
-""" Data extension by questions similarity. """
+""" Data WarmUp by questions similarity. """
 df_train = pd.read_csv('./data/train.csv', encoding='utf-8', engine='python')
 q1 = df_train['question1'].values
 q2 = df_train['question2'].values
@@ -73,10 +73,10 @@ print(len(listxy))
 random.shuffle(listxy)
 df_ext = pd.DataFrame(listxy)
 df_ext.columns = ['question1', 'question2', 'label', 'category']
-df_ext.to_csv('./data/extension/ext_train.csv', index=False)
+df_ext.to_csv('./data/WarmUp/ext_train.csv', index=False)
 
-""" Produce negative samples and ombine extension dataset. """
-df_ext_train = pd.read_csv('./data/extension/ext_train.csv')
+""" Produce negative samples and ombine WarmUp dataset. """
+df_ext_train = pd.read_csv('./data/WarmUp/ext_train.csv')
 temp_q1 = df_train['question1'].values.copy()
 temp_q2 = df_train['question2'].values.copy()
 np.random.shuffle(temp_q1)
@@ -96,10 +96,10 @@ temp_df = temp_df.sample(n=int(df_ext_train.shape[0]*0.8))
 df_train = pd.concat([df_train, df_ext_train, temp_df], sort=False)
 df_train = df_train.drop_duplicates(['question1', 'question2']).reset_index(drop=True)
 df_train.columns = ['question1', 'question2', 'label', 'category']
-df_train.to_csv('./data/extension/final_train.csv', index=False)
+df_train.to_csv('./data/WarmUp/final_train.csv', index=False)
 print('Complete.')
 
-parent_directory = './data/extension/'
+parent_directory = './data/WarmUp/'
 df = pd.read_csv(parent_directory + 'final_train.csv', encoding='utf-8', engine='python')
 kFold = KFold(n_splits=10, shuffle=True, random_state=12345)
 folds = kFold.split(df)

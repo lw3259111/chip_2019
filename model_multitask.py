@@ -17,7 +17,7 @@ from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler, Tens
 from tensorboardX import SummaryWriter
 from tqdm import tqdm, trange
 from transformers import (WEIGHTS_NAME, BertConfig, BertModel, BertTokenizer)
-from transformers import AdamW, Warmup
+from transformers import AdamW, WarmUp
 from transformers.modeling_bert import BertPreTrainedModel
 from data_utils import (compute_metrics, convert_examples_to_features, QPMProcessor)
 
@@ -97,14 +97,14 @@ def train(args, train_dataset, model, tokenizer):
     else:
         t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
 
-    # Prepare optimizer and schedule (linear warmup and decay)
+    # Prepare optimizer and schedule (linear WarmUp and decay)
     no_decay = ['bias', 'LayerNorm.weight']
     optimizer_grouped_parameters = [
         {'params': [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': args.weight_decay},
         {'params': [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-    scheduler = WarmupLinearSchedule(optimizer, warmup_steps=args.warmup_steps, t_total=t_total)
+    scheduler = WarmUpLinearSchedule(optimizer, WarmUp_steps=args.WarmUp_steps, t_total=t_total)
     if args.fp16:
         try:
             from apex import amp
@@ -400,8 +400,8 @@ def main():
                         help='Total number of training epochs to perform.')
     parser.add_argument('--max_steps', default=-1, type=int,
                         help='If > 0: set total number of training steps to perform. Override num_train_epochs.')
-    parser.add_argument('--warmup_steps', default=0, type=int,
-                        help='Linear warmup over warmup_steps.')
+    parser.add_argument('--WarmUp_steps', default=0, type=int,
+                        help='Linear WarmUp over WarmUp_steps.')
 
     parser.add_argument('--logging_steps', type=int, default=50,
                         help='Log every X updates steps.')

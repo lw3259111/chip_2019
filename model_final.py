@@ -313,7 +313,7 @@ def load_and_cache_examples(args, tokenizer, set_type):
     # Load data features from cache or dataset file
     cached_features_file = os.path.join(args.data_dir, 'cached_{}_{}_{}_customized'.format(
         set_type,
-        list(filter(None, args.model_name_or_path.split('/'))).pop(),
+        list(filter(None, args.WarmUp.split('/'))).pop(),
         str(args.max_seq_length)
     ))
     if os.path.exists(cached_features_file):
@@ -368,7 +368,7 @@ def main():
     ## Required parameters
     parser.add_argument('--data_dir', default=None, type=str, required=True,
                         help='The input data dir. Should contain the .csv files for the task.')
-    parser.add_argument('--model_name_or_path', default=None, type=str, required=True,
+    parser.add_argument('--WarmUp', default=None, type=str, required=True,
                         help='Path to pretrained model or shortcut name selected in the list.')
     parser.add_argument('--output_dir', default=None, type=str, required=True,
                         help='The output directory where the model predictions and checkpoints will be written.')
@@ -465,9 +465,9 @@ def main():
 
     # Load pretrained model and tokenizer
     config_class, model_class, tokenizer_class = BertConfig, CustomizedBert, BertTokenizer
-    config = config_class.from_pretrained(args.config_name if args.config_name else args.model_name_or_path, num_labels=num_labels)
-    tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name if args.tokenizer_name else args.model_name_or_path, do_lower_case=args.do_lower_case)
-    model = model_class.from_pretrained(args.model_name_or_path, from_tf=bool('.ckpt' in args.model_name_or_path), config=config)
+    config = config_class.from_pretrained(args.config_name if args.config_name else args.WarmUp, num_labels=num_labels)
+    tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name if args.tokenizer_name else args.WarmUp, do_lower_case=args.do_lower_case)
+    model = model_class.from_pretrained(args.WarmUp, from_tf=bool('.ckpt' in args.WarmUp), config=config)
     model.to(args.device)
 
     logger.info('Trainning/evaluation parameters %s', args)
@@ -480,8 +480,8 @@ def main():
         # 10-Fold dataset for training.
         for i in range(0, 10):
             # Reload the pretrained model.
-            model = model_class.from_pretrained(args.model_name_or_path,
-                                                from_tf=bool('.ckpt' in args.model_name_or_path),
+            model = model_class.from_pretrained(args.WarmUp,
+                                                from_tf=bool('.ckpt' in args.WarmUp),
                                                 config=config)
             model.to(args.device)
 
